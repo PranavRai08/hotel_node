@@ -1,0 +1,96 @@
+
+
+//post
+
+
+// db.js -------------------------------------------------
+
+//import
+const mongoose = require("mongoose");
+
+// MongoDB URL
+const mongoURL = 'mongodb://localhost:27017/hotels';
+
+//MongoDB Connection
+mongoose.connect(mongoURL)
+.then(() =>{
+    console.log("connected.");
+})
+.catch((err) =>{
+    console.error(err);
+})
+
+//Access the Default connection object
+const db = mongoose.connection;
+
+// Define Event Listener
+
+// db.on('connected', () =>{
+//     console.log('Connected to MongoDB Server.');
+// });
+
+// db.on('error', (err) =>{
+//     console.log('MongoDB connection error:', err);
+// });
+
+db.on('disconnected', () =>{
+    console.log('disconnected to MongoDB Server.');
+});
+//Export
+module.exports = db;
+
+//---------------------------------------------------------
+
+
+// menu.js ****************************************************
+
+const mongoose = require("mongoose");
+
+const menuSchema = new mongoose.Schema({
+    name:{
+        type: String,
+        required: true
+    },
+    ingredients:{
+        type: [String],
+        required: true
+    }
+})
+
+const Menu = mongoose.model('Menu', menuSchema);
+module.exports = Menu;
+
+//************************************************************
+
+
+
+// server.js ------------------------------------------------
+
+const express = require('express');
+const app = express();
+const db = require('./db');
+
+// bodyParser: trasform raw data -> javascript object -> req.body(saved into req.body)
+const bodyParser = require("body-parser");
+const Menu = require('./models/Menu');
+app.use(bodyParser.json());
+
+app.post("/menu", async(req, res) =>{
+    try{
+        const data = req.body;
+        const newMenu = new Menu(data);
+        const response = await newMenu.save();
+        res.status(200).json(response);
+        
+    }catch(err){
+        console.log(err);
+        res.status(500).json({error: 'server error'});
+
+    }
+})
+
+//--------------------------------------------------------------
+
+
+
+// db.js -> menu.js -> server.js
