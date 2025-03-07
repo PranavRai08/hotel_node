@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const db = require('./db');
+require('dotenv').config();
 
 // bodyParser: trasform raw data -> javascript object -> req.body(saved into req.body)
 const bodyParser = require("body-parser");
@@ -78,8 +79,8 @@ app.get('/food', (req, res) =>{
 
 
 
+const PORT = process.env.PORT || 3000;
 
-
-app.listen(3000, ()=>{
+app.listen(PORT, ()=>{
     console.log("lestening on server 3000")
 });
